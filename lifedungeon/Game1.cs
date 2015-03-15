@@ -25,6 +25,7 @@ namespace lifedungeon
         SpriteBatch spriteBatch;        
         Vector2 plyPos;
         RNG rng;
+        Map map;
 
         public Game1()
             : base()
@@ -40,6 +41,9 @@ namespace lifedungeon
 
             // RNG
             rng = RNG.Instance;
+            //rng.seed = 471366767;
+            //rng.seed = 951478236;
+            rng.seed = new Random().Next();
 
             // Graphics device
             graphics = new GraphicsDeviceManager(this);
@@ -49,6 +53,18 @@ namespace lifedungeon
             player.AddComponent<TransformComponent>(new TransformComponent(new Vector2(0f, 0f)));
             player.AddComponent<RenderComponent>(new RenderComponent("mage64", 1));
             player.Tag = "player";
+
+            //Room Types
+            List<Tuple<Point, Point>> roomTypes = new List<Tuple<Point, Point>>();
+            roomTypes.Add( new Tuple<Point, Point>(new Point(3, 3), new Point(5, 5)) ); // Min size
+            roomTypes.Add(new Tuple<Point, Point>(new Point(5,5), new Point(8,8))); // Med size
+            roomTypes.Add(new Tuple<Point, Point>(new Point(8,8), new Point(12,12))); // Max size
+
+
+            // Create map entity
+            Map map = new Map( rng.getRNG(), new Point( 240, 240 ), roomTypes);
+            map.buildRooms();
+            map.outputMap();
         }
 
         /// <summary>
@@ -68,6 +84,7 @@ namespace lifedungeon
             EntitySystem.BlackBoard.SetEntry("windowWidth", 800);
             EntitySystem.BlackBoard.SetEntry("windowHeight", 600);
             EntitySystem.BlackBoard.SetEntry("rng", rng);
+            EntitySystem.BlackBoard.SetEntry("map", map);
 
             world.InitializeAll(true);
 
